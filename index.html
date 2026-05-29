@@ -4,12 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style/style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"> <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <title>Spoti'stat</title>
   </head>
   <body>
+    <div class="header text-white"> 
+      <h1>Spoti'stat</h1>
+      <p>Bienvenue sur Spoti'stat! découvrez les morceaux les plus populaires et vos statistiques d'écoute!</p>
+    </div>
+    <div class="body bg-light text-dark" x-data="initSongs()" x-init="loadSongs()" style="padding: 30px 20px; min-height: 100vh;">
+      <div class="search-container">
+        <span class="search-icon text-info" style="font-size: 18px;">🔍</span>
+        <input type="text" placeholder="Rechercher..." class="form-control form-control-sm" @input="searchQuery = $event.target.value">
+      </div>
+      <div class="bg-white p-3 mb-4" style="border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <h3 class="text-dark mb-3">Top 5 Artistes</h3>
+        <canvas id="chartArtistes" style="max-width: 500px; max-height: 300px;"></canvas>
+      </div>      
+      <div class="list-header bg-info text-white">
+        <div>Titre</div>
+        <div>Artiste</div>
+        <div>Album</div>
+        <div>Action</div>
+      </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script> <!-- Bootstrap JS -->  
+      <ul class="list bg-white">
+        <template x-for="song in filteredSongs" :key="song.id">
+          <li class="list-item">
+            <div class="list-title text-dark" x-text="song.titre"></div>
+            <div class="list-artist text-muted" x-text="song.artiste"></div>
+            <div class="list-album text-muted" x-text="song.album"></div>
+            <button class="btn btn-primary btn-sm w-100">Détails</button>
+          </li>
+        </template>
+      </ul>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="script/script.js"></script>
   </body>
 </html>
