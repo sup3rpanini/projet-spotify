@@ -6,12 +6,18 @@ function initSongs() {
     songs: [],
     topArtists: [],
     searchQuery: '',
+    selectedSong: null,
     get filteredSongs() {
       return this.songs.filter(s => 
         s.titre.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
         s.artiste.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
         s.album.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
+    },
+    openDetails(song) {
+      this.selectedSong = song;
+      const modal = new bootstrap.Modal(document.getElementById('detailsModal'));
+      modal.show();
     }
   };
 }
@@ -80,23 +86,16 @@ function initChart(topArtists) {
 async function loadSongs() {
   try {
     const response = await fetch('./data/data.json');
-    const albums = await response.json();
+    const tracks = await response.json();
 
-    // Extraire toutes les chansons de tous les albums
-    const allSongs = [];
-    
-    albums.forEach(album => {
-      if (album.album && album.album.tracks) {
-        album.album.tracks.forEach(track => {
-          allSongs.push({
-            id: track.id,
-            titre: track.name,
-            artiste: album.album.artists[0]?.name || 'Artiste inconnu',
-            album: album.album.name,
-          });
-        });
-      }
-    });
+    // Traiter directement les chansons du JSON
+    const allSongs = tracks.map(track => ({
+      id: track.id,
+      titre: track.name,
+      artiste: track.artists[0]?.name || 'Artiste inconnu',
+      album: track.album.name,
+      image: track.album.images[track.album.images.length - 1]?.url || '',
+    }));
 
     // Compter les artistes
     const artisteCounts = {};
