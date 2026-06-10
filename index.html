@@ -19,9 +19,19 @@
         <span class="search-icon text-info" style="font-size: 18px;">🔍</span>
         <input type="text" placeholder="Rechercher..." class="form-control form-control-sm" @input="searchQuery = $event.target.value">
       </div>
-      <div class="bg-white p-3 mb-4" style="border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-        <h3 class="text-dark mb-3">Top 5 Artistes</h3>
-        <canvas id="chartArtistes" style="max-width: 500px; max-height: 300px;"></canvas>
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <div class="bg-white p-3" style="border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <h3 class="text-dark mb-3">Top 5 Artistes</h3>
+            <canvas id="chartArtistes" style="max-width: 100%; max-height: 300px;"></canvas>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="bg-white p-3" style="border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <h3 class="text-dark mb-3">Distribution des Genres</h3>
+            <canvas id="chartGenres" style="max-width: 100%; max-height: 300px;"></canvas>
+          </div>
+        </div>
       </div>      
       <div class="list-header bg-info text-white">
         <div>Titre</div>
@@ -68,11 +78,19 @@
                       <h6 class="text-muted">Album</h6>
                       <p x-text="selectedSong.album" style="font-size: 18px;"></p>
                     </div>
+                    <div class="mb-3">
+                      <h6 class="text-muted">Durée</h6>
+                      <p style="font-size: 16px;"><strong x-text="Math.floor(selectedSong.duration_ms / 1000 / 60) + ':' + String(Math.floor((selectedSong.duration_ms / 1000) % 60)).padStart(2, '0')"></strong></p>
+                    </div>
+                    <div class="alert alert-warning" role="alert" style="margin-top: 15px;">
+                      <strong>Aperçu non disponible,</strong> clique ci-dessous pour écouter sur Spotify!
+                    </div>
                   </div>
                 </div>
               </template>
             </div>
             <div class="modal-footer">
+              <button type="button" class="btn btn-primary" @click="window.open('https://open.spotify.com/search/' + encodeURIComponent(selectedSong.titre + ' ' + selectedSong.artiste), '_blank')">écouter sur Spotify</button>
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
             </div>
           </div>
