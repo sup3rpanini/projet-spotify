@@ -20,6 +20,7 @@
         <span class="search-icon text-info" style="font-size: 18px;">🔍</span>
         <input type="text" placeholder="Rechercher..." class="form-control form-control-sm" @input="searchQuery = $event.target.value">
       </div>
+      <!-- graphique artistes les plus présents -->
       <div class="row mb-4">
         <div class="col-md-6">
           <div class="bg-white p-3" style="border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
@@ -27,6 +28,7 @@
             <canvas id="chartArtistes" style="max-width: 100%; max-height: 300px;"></canvas>
           </div>
         </div>
+        <!-- graphique genres musicaux -->
         <div class="col-md-6">
           <div class="bg-white p-3" style="border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
             <h3 class="text-dark mb-3">Distribution des Genres</h3>
@@ -41,6 +43,7 @@
         <div>Action</div>
       </div>
 
+      <!-- liste des morceaux -->
       <ul class="list bg-white">
         <template x-for="song in filteredSongs" :key="song.id">
           <li class="list-item">
@@ -142,6 +145,8 @@
                 </div>
               </template>
             </div>
+            
+            <!-- boutons du modal -->
             <div class="modal-footer">
               <button type="button" class="btn btn-success d-flex align-items-center gap-1"  @click="window.open('https://open.spotify.com/search/' + encodeURIComponent(selectedSong.titre + ' ' + selectedSong.artiste), '_blank')" >
                 <img src="./Images/logo_Spotify.png" alt="logo spotify" style="width:20px; height:20px;">

@@ -88,7 +88,7 @@ function initSongs() {
   };
 }
 
-// Initialiser le graphique Chart.js
+// Initialiser le graphique des artistes (Bar Chart)
 function initChart(topArtists) {
   const ctx = document.getElementById('chartArtistes')?.getContext('2d');
   
@@ -232,7 +232,7 @@ async function loadSongs() {
       artisteCounts[song.artiste] = (artisteCounts[song.artiste] || 0) + 1;
     });
 
-    // Convertir en array et trier par count décroissant
+    // Convertir en array et trier par ordre décroissant
     const topArtists = Object.entries(artisteCounts)
       .map(([nom, count]) => ({ nom, count }))
       .sort((a, b) => b.count - a.count)
@@ -246,7 +246,7 @@ async function loadSongs() {
       });
     });
 
-    // Convertir en array et grouper les genres avec < 3 musiques dans "Autres"
+    // Convertir en array et grouper les genres avec - de 3 musiques dans "Autres"
     let topGenres = Object.entries(genreCounts)
       .map(([nom, count]) => ({ nom, count }))
       .sort((a, b) => b.count - a.count);
