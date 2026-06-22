@@ -6,6 +6,7 @@ function initSongs() {
   return {
     songs: [],
     topArtists: [],
+    albums: [],
     searchQuery: '',
     selectedSong: null,
     get filteredSongs() {
@@ -258,9 +259,31 @@ async function loadSongs() {
       topGenresFiltered.push({ nom: 'Autres', count: otherCount });
     }
 
+    // Extraire les albums uniques
+    const albumsMap = {};
+    tracks.forEach(track => {
+      const albumId = track.album.id;
+      if (!albumsMap[albumId]) {
+        albumsMap[albumId] = {
+          id: albumId,
+          name: track.album.name,
+          artist: track.artists[0]?.name || 'Artiste inconnu',
+          image: track.album.images[1]?.url || track.album.images[0]?.url || '',
+          release_date: track.album.release_date || '',
+          total_tracks: track.album.total_tracks || 0,
+          popularity: track.popularity || 0
+        };
+      } else {
+        // Garder la popularité max des tracks de l'album
+        albumsMap[albumId].popularity = Math.max(albumsMap[albumId].popularity, track.popularity || 0);
+      }
+    });
+    const albums = Object.values(albumsMap).sort((a, b) => b.popularity - a.popularity);
+
     // Mettre à jour Alpine
     document.querySelector('[x-data*="initSongs"]')._x_dataStack[0].songs = allSongs;
     document.querySelector('[x-data*="initSongs"]')._x_dataStack[0].topArtists = topArtists;
+    document.querySelector('[x-data*="initSongs"]')._x_dataStack[0].albums = albums;
 
     // Initialiser les graphiques
     initChart(topArtists);
