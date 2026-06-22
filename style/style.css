@@ -73,3 +73,7 @@
 .list-title {
   font-weight: 500;
 }
+
+.list-item > div {
+  min-width: 0;
+}

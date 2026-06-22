@@ -3,8 +3,9 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="./style/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="./icone.ico">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <title>Spoti'stat</title>
@@ -55,42 +56,97 @@
       <div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Détails de la chanson</h5>
+            <div class="modal-header border-bottom-0 pb-1">
+              <h5 class="modal-title fw-bold">Détails du morceau</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body pt-2">
               <template x-if="selectedSong">
-                <div class="row">
-                  <div class="col-md-6 text-center">
-                    <img :src="selectedSong.image" alt="Album cover" class="img-fluid rounded" style="width: 100%; max-width: 350px; height: auto;">
+                <div class="row g-3">
+                  <!-- Colonne gauche : pochette + infos album -->
+                  <div class="col-md-4 text-center">
+                    <img :src="selectedSong.image" alt="Album cover" class="rounded" style="width:180px; height:180px; object-fit:cover;">
+                    <p class="fw-semibold mt-2 mb-0 small" x-text="selectedSong.album"></p>
+                    <p class="text-muted mb-1" style="font-size:12px;" x-text="formatDate(selectedSong.release_date) + ' • ' + selectedSong.total_tracks + ' titres'"></p>
+                    <span class="badge rounded-pill px-3 py-1" style="background:#1DB954; font-size:12px;" x-text="'Popularité: ' + selectedSong.popularity + '/100'"></span>
                   </div>
-                  <div class="col-md-6">
+
+                  <!-- Colonne droite : titre + audio + infos -->
+                  <div class="col-md-8">
+                    <h5 class="fw-bold mb-3" x-text="selectedSong.titre"></h5>
+
+                    <!-- Preview audio -->
                     <div class="mb-3">
-                      <h6 class="text-muted">Titre</h6>
-                      <h4 x-text="selectedSong.titre"></h4>
+                      <p class="fw-semibold mb-1" style="font-size:14px;">Preview audio</p>
+                      <div id="audioContainer"></div>
                     </div>
+
+                    <!-- Informations sur le morceau -->
                     <div class="mb-3">
-                      <h6 class="text-muted">Artiste</h6>
-                      <p x-text="selectedSong.artiste" style="font-size: 18px;"></p>
+                      <p class="fw-semibold mb-2" style="font-size:14px;">Informations sur le morceau</p>
+                      <table class="table table-sm table-borderless mb-0">
+                        <tbody>
+                          <tr>
+                            <td class="text-muted ps-0" style="font-size:14px;">Durée</td>
+                            <td class="text-end pe-0">
+                              <span class="badge bg-primary" x-text="formatDuration(selectedSong.duration_ms)"></span>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="text-muted ps-0" style="font-size:14px;">Popularité</td>
+                            <td class="text-end pe-0">
+                              <div class="d-flex align-items-center gap-2 justify-content-end">
+                                <div class="progress" style="width:90px; height:7px;">
+                                  <div class="progress-bar bg-info" :style="'width:' + selectedSong.popularity + '%'"></div>
+                                </div>
+                                <span style="font-size:13px;" x-text="selectedSong.popularity + '/100'"></span>
+                              </div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="text-muted ps-0" style="font-size:14px; color:#fd7e14 !important;">Numéro de piste</td>
+                            <td class="text-end pe-0 fw-bold" style="color:#fd7e14; font-size:14px;" x-text="selectedSong.track_number"></td>
+                          </tr>
+                          <tr>
+                            <td class="text-muted ps-0" style="font-size:14px;">Explicit</td>
+                            <td class="text-end pe-0" style="font-size:14px;" x-text="selectedSong.explicit ? 'Oui' : 'Non'"></td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
+
+                    <!-- Artistes -->
                     <div class="mb-3">
-                      <h6 class="text-muted">Album</h6>
-                      <p x-text="selectedSong.album" style="font-size: 18px;"></p>
+                      <p class="fw-semibold mb-2" style="font-size:14px;">Artistes</p>
+                      <template x-for="artist in selectedSong.artists" :key="artist.name">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                          <img :src="artist.image" :alt="artist.name" class="rounded-circle" style="width:38px; height:38px; object-fit:cover; flex-shrink:0;" x-show="artist.image">
+                          <div>
+                            <p class="mb-0 fw-semibold" style="font-size:14px;" x-text="artist.name"></p>
+                            <p class="mb-0 text-muted" style="font-size:12px;" x-text="'Popularité: ' + artist.popularity + '/100   Followers: ' + artist.followers.toLocaleString('fr-FR')"></p>
+                          </div>
+                        </div>
+                      </template>
                     </div>
-                    <div class="mb-3">
-                      <h6 class="text-muted">Durée</h6>
-                      <p style="font-size: 16px;"><strong x-text="Math.floor(selectedSong.duration_ms / 1000 / 60) + ':' + String(Math.floor((selectedSong.duration_ms / 1000) % 60)).padStart(2, '0')"></strong></p>
-                    </div>
-                    <div class="alert alert-warning" role="alert" style="margin-top: 15px;">
-                      <strong>Aperçu non disponible,</strong> clique ci-dessous pour écouter sur Spotify!
+
+                    <!-- Genres -->
+                    <div x-show="selectedSong.genres && selectedSong.genres.length > 0">
+                      <p class="fw-semibold mb-2" style="font-size:14px;">Genres</p>
+                      <div>
+                        <template x-for="genre in selectedSong.genres" :key="genre">
+                          <span class="badge rounded-pill me-1 mb-1 text-lowercase" style="background:#1a1a2e; color:#ccc; font-size:12px; font-weight:400;" x-text="genre"></span>
+                        </template>
+                      </div>
                     </div>
                   </div>
                 </div>
               </template>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-primary" @click="window.open('https://open.spotify.com/search/' + encodeURIComponent(selectedSong.titre + ' ' + selectedSong.artiste), '_blank')">écouter sur Spotify</button>
+              <button type="button" class="btn btn-success d-flex align-items-center gap-1"  @click="window.open('https://open.spotify.com/search/' + encodeURIComponent(selectedSong.titre + ' ' + selectedSong.artiste), '_blank')" >
+                <img src="./logo_Spotify.png" alt="logo spotify" style="width:20px; height:20px;">
+                Ouvrir dans Spotify
+              </button>
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
             </div>
           </div>
@@ -100,6 +156,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script src="script/script.js"></script>
+    <script src="./script/script.js"></script>
   </body>
 </html>

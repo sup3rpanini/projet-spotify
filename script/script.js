@@ -9,11 +9,23 @@ function initSongs() {
     searchQuery: '',
     selectedSong: null,
     get filteredSongs() {
-      return this.songs.filter(s => 
+      return this.songs.filter(s =>
         s.titre.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
         s.artiste.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
         s.album.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
+    },
+    formatDuration(ms) {
+      const total = Math.floor(ms / 1000);
+      const min = Math.floor(total / 60);
+      const sec = String(total % 60).padStart(2, '0');
+      return `${min}:${sec}`;
+    },
+    formatDate(dateStr) {
+      if (!dateStr) return '';
+      const [y, m, d] = dateStr.split('-');
+      const date = new Date(Number(y), Number(m) - 1, Number(d));
+      return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
     },
     openDetails(song) {
       this.selectedSong = song;
@@ -27,7 +39,6 @@ function initSongs() {
           container.innerHTML = '';
           const audio = document.createElement('audio');
           audio.controls = true;
-          audio.crossOrigin = 'anonymous';
           audio.style.width = '100%';
           audio.style.cursor = 'pointer';
           
@@ -198,10 +209,21 @@ async function loadSongs() {
       titre: track.name,
       artiste: track.artists[0]?.name || 'Artiste inconnu',
       album: track.album.name,
-      image: track.album.images[track.album.images.length - 1]?.url || '',
+      image: track.album.images[1]?.url || track.album.images[0]?.url || '',
       preview_url: track.preview_url || '',
       genres: track.album.genres || [],
-      duration_ms: track.duration_ms || 0
+      duration_ms: track.duration_ms || 0,
+      popularity: track.popularity || 0,
+      explicit: track.explicit || false,
+      track_number: track.track_number || 1,
+      release_date: track.album.release_date || '',
+      total_tracks: track.album.total_tracks || 0,
+      artists: track.artists.map(a => ({
+        name: a.name,
+        popularity: a.popularity || 0,
+        followers: a.followers?.total || 0,
+        image: a.images?.[1]?.url || a.images?.[0]?.url || ''
+      }))
     }));
 
     // Compter les artistes
