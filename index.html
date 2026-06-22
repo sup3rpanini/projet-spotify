@@ -16,10 +16,6 @@
       <p>Bienvenue sur Spoti'stat! découvrez les morceaux les plus populaires et vos statistiques d'écoute!</p>
     </div>
     <div class="body bg-light text-dark" x-data="initSongs()" x-init="loadSongs()" style="padding: 30px 20px; min-height: 100vh;">
-      <div class="search-container">
-        <span class="search-icon text-info" style="font-size: 18px;">🔍</span>
-        <input type="text" placeholder="Rechercher..." class="form-control form-control-sm" @input="searchQuery = $event.target.value">
-      </div>
       <!-- graphique artistes les plus présents -->
       <div class="row mb-4">
         <div class="col-md-6">
@@ -36,11 +32,12 @@
           </div>
         </div>
       </div>      
-      <div class="list-header bg-info text-white">
-        <div>Titre</div>
-        <div>Artiste</div>
-        <div>Album</div>
-        <div>Action</div>
+      <div class="list-header bg-info text-white d-flex align-items-center justify-content-between">
+        <h2 class="mb-0">Liste des morceaux</h2>
+        <div class="d-flex align-items-center gap-2">
+          <span style="font-size:18px;">🔍</span>
+          <input type="text" placeholder="Rechercher..." class="form-control form-control-sm" style="width:200px; border-radius:20px;" @input="searchQuery = $event.target.value">
+        </div>
       </div>
 
       <!-- liste des morceaux -->
@@ -61,7 +58,7 @@
         <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3">
           <template x-for="album in albums" :key="album.id">
             <div class="col">
-              <div class="card h-100 border" style="border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+              <div class="card h-100 border album-card" style="border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
                 <img :src="album.image" :alt="album.name" class="card-img-top" style="height:130px; object-fit:cover; border-radius:8px 8px 0 0;">
                 <div class="card-body p-2">
                   <p class="fw-bold mb-0" style="font-size:13px; line-height:1.3;" x-text="album.name"></p>
@@ -91,7 +88,7 @@
                 <div class="row g-3">
                   <!-- Colonne gauche : pochette + infos album -->
                   <div class="col-md-4 text-center">
-                    <img :src="selectedSong.image" alt="Album cover" class="rounded" style="width:180px; height:180px; object-fit:cover;">
+                    <img :src="selectedSong.image" alt="Album cover" class="rounded img-fluid" style="max-width:180px; width:100%; aspect-ratio:1/1; object-fit:cover;">
                     <p class="fw-semibold mt-2 mb-0 small" x-text="selectedSong.album"></p>
                     <p class="text-muted mb-1" style="font-size:12px;" x-text="formatDate(selectedSong.release_date) + ' • ' + selectedSong.total_tracks + ' titres'"></p>
                     <span class="badge rounded-pill px-3 py-1" style="background:#1DB954; font-size:12px;" x-text="'Popularité: ' + selectedSong.popularity + '/100'"></span>

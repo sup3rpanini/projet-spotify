@@ -278,7 +278,7 @@ async function loadSongs() {
         albumsMap[albumId].popularity = Math.max(albumsMap[albumId].popularity, track.popularity || 0);
       }
     });
-    const albums = Object.values(albumsMap).sort((a, b) => b.popularity - a.popularity);
+    const albums = Object.values(albumsMap).sort((a, b) => b.popularity - a.popularity).slice(0, 12);
 
     // Mettre à jour Alpine
     document.querySelector('[x-data*="initSongs"]')._x_dataStack[0].songs = allSongs;

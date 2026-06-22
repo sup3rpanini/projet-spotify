@@ -41,9 +41,6 @@
 }
 
 .list-header {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 100px;
-  gap: 20px;
   padding: 15px 20px;
   font-weight: bold;
   font-size: 14px;
@@ -76,4 +73,13 @@
 
 .list-item > div {
   min-width: 0;
+}
+
+.album-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.album-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15) !important;
 }
