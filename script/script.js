@@ -32,58 +32,50 @@ function initSongs() {
       this.selectedSong = song;
       const modal = new bootstrap.Modal(document.getElementById('detailsModal'));
       modal.show();
-      
-      // Créer et charger l'audio après que le modal soit affiché
-      setTimeout(() => {
+
+      setTimeout(async () => {
         const container = document.getElementById('audioContainer');
-        if (container && song.preview_url) {
-          container.innerHTML = '';
-          const audio = document.createElement('audio');
-          audio.controls = true;
-          audio.style.width = '100%';
-          audio.style.cursor = 'pointer';
-          
-          const source = document.createElement('source');
-          source.src = song.preview_url;
-          source.type = 'audio/mpeg';
-          
-          audio.appendChild(source);
-          
-          const errorMsg = document.createElement('div');
-          errorMsg.style.marginTop = '10px';
-          errorMsg.style.padding = '10px';
-          errorMsg.style.backgroundColor = '#fff3cd';
-          errorMsg.style.color = '#856404';
-          errorMsg.style.borderRadius = '4px';
-          errorMsg.style.display = 'none';
-          errorMsg.innerHTML = '⚠️ Cet aperçu n\'est pas disponible. Écoute sur Spotify ou Deezer pour entendre la chanson complète.';
-          
-          audio.addEventListener('canplay', () => {
-            console.log('Audio prêt à être joué');
-            errorMsg.style.display = 'none';
-          });
-          
-          audio.addEventListener('error', (e) => {
-            console.error('Erreur audio:', audio.error, e);
-            audio.style.display = 'none';
-            errorMsg.style.display = 'block';
-          });
-          
-          // Afficher l'erreur après 3 secondes si l'audio ne charge pas
-          const timeout = setTimeout(() => {
-            if (audio.readyState === 0) {
-              audio.style.display = 'none';
-              errorMsg.style.display = 'block';
-            }
-          }, 3000);
-          
-          audio.addEventListener('canplay', () => {
-            clearTimeout(timeout);
-          });
-          
-          container.appendChild(audio);
-          container.appendChild(errorMsg);
+        if (!container) return;
+
+        container.innerHTML = '<p class="text-muted small mb-0">Chargement de l\'aperçu...</p>';
+
+        const previewUrl = await new Promise((resolve) => {
+          const cb = `dz${song.id}${Date.now()}`;
+          window[cb] = (data) => {
+            resolve(data.preview ?? '');
+            delete window[cb];
+            document.getElementById(cb)?.remove();
+          };
+          const s = document.createElement('script');
+          s.id = cb;
+          s.src = `https://api.deezer.com/track/${song.id}?output=jsonp&callback=${cb}`;
+          s.onerror = () => { resolve(''); delete window[cb]; s.remove(); };
+          document.head.appendChild(s);
+        });
+
+        container.innerHTML = '';
+
+        if (!previewUrl) {
+          container.innerHTML = '<div style="padding:10px; background:#fff3cd; color:#856404; border-radius:4px;">⚠️ Aperçu non disponible pour ce morceau.</div>';
+          return;
         }
+
+        const audio = document.createElement('audio');
+        audio.controls = true;
+        audio.style.width = '100%';
+        audio.src = previewUrl;
+
+        const errorMsg = document.createElement('div');
+        errorMsg.style.cssText = 'margin-top:8px; padding:10px; background:#fff3cd; color:#856404; border-radius:4px; display:none;';
+        errorMsg.textContent = '⚠️ Aperçu non disponible pour ce morceau.';
+
+        audio.addEventListener('error', () => {
+          audio.style.display = 'none';
+          errorMsg.style.display = 'block';
+        });
+
+        container.appendChild(audio);
+        container.appendChild(errorMsg);
       }, 200);
     }
   };
